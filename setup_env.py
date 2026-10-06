@@ -3,18 +3,35 @@ import argparse
 import subprocess
 import sys
 import venv
+from importlib.metadata import PackageNotFoundError, version
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent
 
 
+def dependencies_ready():
+    """Check the current interpreter without installing or contacting the network."""
+    try:
+        for line in (ROOT / "requirements.txt").read_text(encoding="utf-8").splitlines():
+            if line.strip() and not line.startswith("#"):
+                name, required = line.strip().split("==", 1)
+                if version(name) != required:
+                    return False
+        return True
+    except (OSError, ValueError, PackageNotFoundError):
+        return False
+
+
 def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--run", action="store_true", help="Launch Bug Hunter after setup.")
+    parser.add_argument("--check", action="store_true", help="Check pinned dependencies in the current Python only.")
     args = parser.parse_args(argv)
     if sys.version_info < (3, 11):
         print("Install Python 3.11 or newer, then run setup again.")
         return 1
+    if args.check:
+        return 0 if dependencies_ready() else 1
     environment = ROOT / ".venv"
     python = environment / ("Scripts/python.exe" if sys.platform == "win32" else "bin/python")
     try:
@@ -38,7 +55,8 @@ def main(argv=None):
     if args.run:
         return subprocess.run([str(python), str(ROOT / "launch.py")],
                               cwd=ROOT, shell=False, check=False).returncode
-    print("Start with run.bat (Windows) or bash run.sh (macOS/Linux).")
+    print("Start with start.bat (Windows) or bash start.sh (macOS/Linux).")
+    print("Use run.bat / bash run.sh for a foreground launch without guided Ollama setup.")
     return 0
 
 

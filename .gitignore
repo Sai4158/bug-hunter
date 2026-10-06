@@ -11,3 +11,4 @@ Thumbs.db
 evaluation/results/
 evaluation/reviews/
 *.log
+.bug-hunter-runtime/

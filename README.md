@@ -26,7 +26,84 @@ VS Code. You do not need the SWENG coursework repository.
 
 ## Quick start
 
-### Prerequisites
+### Simplest Windows start / stop
+
+Double-click **start.bat**, or run this from the project folder:
+
+```powershell
+.\start.bat
+```
+
+The helper checks Python, project packages, local Ollama, and the smaller
+`qwen2.5-coder:3b` model. It then starts Streamlit in the background and opens
+**http://127.0.0.1:8501**. Run Start again to reopen the existing app, not launch
+a duplicate.
+
+On the first run:
+
+- Missing Python/Ollama can be installed for your Windows account through
+  [WinGet](https://learn.microsoft.com/en-us/windows/package-manager/winget/install).
+  You are asked before installation; package/source terms apply. Python 3.12 is
+  selected when no suitable Python is found.
+- Python packages are installed only into this project's `.venv`, and subsequent
+  launches skip installation when the pinned versions already match.
+- If the 3B model is missing, you are asked before its roughly **2 GB** download.
+  The helper never silently downloads the larger 7B model.
+- An existing native or Docker Ollama service is reused. Docker is not installed
+  or required. If native Ollama is installed but stopped, the helper starts it.
+
+Internet, disk space, and any Windows installation permissions are needed for
+initial setup. If WinGet is unavailable or company policy blocks installation,
+use the manual prerequisites below; the helper will report the problem honestly.
+
+Double-click **stop.bat**, or run:
+
+```powershell
+.\stop.bat
+```
+
+Stop shuts down only processes recorded and verified as started by this helper.
+It does **not** kill all Python processes, stop Docker, or shut down an Ollama
+service that was already running. An Ollama server started by this helper is
+stopped with the app. Browser tabs are not forcibly closed. An app launched with
+the older `run.bat` is not managed by Stop; stop that terminal with **Ctrl+C**.
+
+Optional commands:
+
+```powershell
+.\start.bat -NoBrowser
+.\start.bat -Port 8502
+powershell -NoProfile -ExecutionPolicy Bypass -File .\control.ps1 -Action status
+```
+
+Start refuses to take over an occupied port. `-Yes` explicitly approves the
+missing-software installations and model download without asking again; leave
+it off for normal interactive setup. The batch helpers permit only the bundled
+PowerShell script for that invocation; they do not change your permanent
+execution policy. Logs and ownership state live in the ignored
+`.bug-hunter-runtime/` directory. Do not copy that state to another computer.
+To change the port of an already running managed app, run Stop first, then Start
+with `-Port 8502`. Otherwise Start reopens the existing instance on its current port.
+
+### Simple macOS / Linux start / stop
+
+After installing Python 3.11+ and native Ollama (or using your existing Docker
+Ollama), run:
+
+```bash
+bash start.sh
+bash stop.sh
+```
+
+These helpers prepare/check the project environment, offer the missing 3B model
+download, and manage the app like their Windows counterparts. They do **not**
+install operating-system packages, invoke `sudo`, or run a remote install script.
+If Python or Ollama is missing, use the manual instructions below. You can use
+`bash start.sh --no-browser --port 8502` or `.venv/bin/python control.py status`.
+
+### Manual setup alternative
+
+#### Prerequisites
 
 - Python **3.11 or newer**, 64-bit. Python 3.12 was tested on Windows.
   Install from [python.org](https://www.python.org/downloads/). On Windows,
@@ -39,7 +116,7 @@ VS Code. You do not need the SWENG coursework repository.
 Every teammate needs their own Python environment and local model. The repository
 does not include Python, virtual environments, or model weights.
 
-### Windows — PowerShell or Command Prompt
+#### Windows — PowerShell or Command Prompt
 
 Run these from the downloaded project folder:
 
@@ -77,7 +154,7 @@ py -3 setup_env.py --run
 PowerShell users may alternatively use `.\run.ps1` if their script policy permits
 it. No activation command or execution-policy change is required for `run.bat`.
 
-### macOS / Linux
+#### macOS / Linux
 
 From the project folder:
 
@@ -101,7 +178,7 @@ Some Linux Python installations require their distribution's `python3-venv`
 package before environment creation. If setup fails, read its actual installer
 error; it will not launch or claim success.
 
-### Check setup / manual launch
+#### Check setup / manual launch
 
 Windows:
 
@@ -131,7 +208,9 @@ Do not copy a virtual environment between computers or operating systems.
 ollama pull qwen2.5-coder:7b
 ```
 
-Downloads are always explicit; the application never pulls a model automatically.
+The Start helper downloads the 3B model only after your confirmation (or an
+explicit `-Yes` / `--yes` option). The Streamlit application itself never pulls
+models, and installing the optional 7B model remains a separate manual command.
 Choose an installed model in the sidebar and use **Refresh Models** after a
 download. CPU inference can take a minute or more. The smaller model is not as
 reliable on every case; the larger model is not guaranteed to produce a correct
@@ -248,8 +327,11 @@ evaluation/results/        Your generated runs (ignored)
 evaluation/reviews/        Separate human judgments (ignored)
 tests/                     Project regression tests
 docs/VALIDATION.md         Historical evaluation notes
+AGENTS.md                  Coding-agent scope, safety, and verification guidance
 setup_env.py, setup.*       Project-local dependency setup
 launch.py, run.*            Portable startup and checks
+control.py, control.ps1     Managed startup, ownership checks, and shutdown
+start.*, stop.*             One-command start / stop helpers
 requirements.txt           Pinned direct Python dependencies
 ```
 
@@ -276,7 +358,10 @@ AI or Pylint accuracy. Hardware, model warm-up, and background load affect timin
 | Ollama is offline | Start its application/service, confirm its local URL, then refresh models. |
 | No models are listed | Explicitly pull a model using the commands above. |
 | Analysis is slow | Try Fast Demo, use smaller inputs, and allow model warm-up time. |
-| Port 8501 is occupied | Stop your other Streamlit instance, or manually launch with `--server.port 8502`. |
+| Port 8501 is occupied | Stop the other instance yourself, or use `start.bat -Port 8502` / `bash start.sh --port 8502`. Start will not kill an unrelated process. |
+| Stop did not close my app | Stop manages only instances started with Start. For `run.bat`, `run.sh`, or a manual Streamlit launch, use Ctrl+C in that terminal. |
+| Model download was declined or interrupted | Retry Start when ready. It does not claim a missing model is installed; `run.bat` / `bash run.sh` can open the interface without guided model setup. |
+| WinGet is unavailable or installation is blocked | Install Python and Ollama manually using the official links above, then retry Start. First-run installation is not guaranteed on locked-down computers. |
 | Tests cannot import your code | Import functions from `candidate`, not the project `app` module. |
 | Existing `.venv` is incomplete | Rename it as a backup, then rerun setup. |
 | Running from a downloaded ZIP fails | Extract the whole ZIP and run from the extracted project folder. |
@@ -287,7 +372,7 @@ Windows:
 
 ```powershell
 .\.venv\Scripts\python.exe -m pytest -q
-.\.venv\Scripts\python.exe -m compileall -q app.py launch.py setup_env.py bug_hunter evaluation tests
+.\.venv\Scripts\python.exe -m compileall -q app.py launch.py setup_env.py control.py bug_hunter evaluation tests
 .\.venv\Scripts\python.exe -m pip check
 ```
 
@@ -298,6 +383,25 @@ handling, UI behavior, evaluation integrity, and the setup helpers. These regres
 tests do not constitute a new model evaluation. See the historical validation
 notes for earlier platform checks; do not assume that every platform has been
 executed on every revision.
+
+### Start / Stop helper checks (October 6, 2026)
+
+- Windows Python 3.12: **117 passed, 0 failed**. A fresh Linux Python 3.11
+  environment: **115 passed, 0 failed, 2 skipped** (Windows-only PowerShell tests).
+  macOS was not executed.
+- Real Windows Start → HTTP 200 health check → repeated Start (same process) →
+  Stop → repeated Stop → restart passed. The pre-existing Docker Ollama service
+  remained available after Stop. Start opened the browser on restart.
+- Dependency checks, Python compilation, PowerShell syntax, shell syntax,
+  whitespace checks, and recorded-evidence integrity passed.
+- Installer consent and streamed model-download behavior were checked with mocks.
+  Python and the 3B model were already installed here, so a real WinGet install or
+  a fresh model download was **not** performed during this check.
+- A real 3B-model boundary demo produced **2 passed / 1 failed** on original code
+  and **3 passed / 0 failed** on corrected code; Fix Verified was **Yes**. Analysis
+  took **140.648 seconds** on this computer. The new timestamped raw result is in
+  `evaluation/results/` (ignored); all shipped historical evidence stayed unchanged.
+  This validates the workflow, not guaranteed model accuracy or instant responses.
 
 ### Standalone migration checks (October 6, 2026)
 
