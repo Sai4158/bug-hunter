@@ -1,0 +1,473 @@
+{
+  "run_utc": "20261005T022008840333Z",
+  "results": [
+    {
+      "case_id": "01-off-by-one",
+      "bug_category": "off-by-one",
+      "ollama_model": "qwen2.5-coder:1.5b",
+      "ai_status": "malformed",
+      "ai_response_sha256": "9b681cbbd56f10897d21951835278e8644dd13ba45e93aa2639b3d223dbd2977",
+      "ai_detected_intended_bug": "Unreviewed",
+      "ai_detection_candidate_heuristic": false,
+      "ai_number_of_findings": null,
+      "pylint_detected_functional_issue": "No",
+      "pylint_status": "ok",
+      "pylint_total_findings": 2,
+      "ai_produced_fix": false,
+      "original_tests_passed": 0,
+      "original_tests_failed": 3,
+      "original_test_errors": 0,
+      "corrected_tests_passed": 0,
+      "corrected_tests_failed": 0,
+      "corrected_test_errors": 0,
+      "corrected_test_status": "not_run",
+      "ai_fix_successful": false,
+      "reference_tests_passed": 3,
+      "analysis_seconds": 27.762,
+      "external_api_cost_usd": 0,
+      "prompt_tokens": null,
+      "completion_tokens": null
+    },
+    {
+      "case_id": "02-comparison",
+      "bug_category": "wrong comparison",
+      "ollama_model": "qwen2.5-coder:1.5b",
+      "ai_status": "malformed",
+      "ai_response_sha256": "ebb39400eea72ad2a466286d223fa5663e3b46f721c64aa7a291b6f6b3d288fd",
+      "ai_detected_intended_bug": "Unreviewed",
+      "ai_detection_candidate_heuristic": false,
+      "ai_number_of_findings": null,
+      "pylint_detected_functional_issue": "No",
+      "pylint_status": "ok",
+      "pylint_total_findings": 2,
+      "ai_produced_fix": false,
+      "original_tests_passed": 2,
+      "original_tests_failed": 1,
+      "original_test_errors": 0,
+      "corrected_tests_passed": 0,
+      "corrected_tests_failed": 0,
+      "corrected_test_errors": 0,
+      "corrected_test_status": "not_run",
+      "ai_fix_successful": false,
+      "reference_tests_passed": 3,
+      "analysis_seconds": 13.02,
+      "external_api_cost_usd": 0,
+      "prompt_tokens": null,
+      "completion_tokens": null
+    },
+    {
+      "case_id": "07-boolean",
+      "bug_category": "bad boolean condition",
+      "ollama_model": "qwen2.5-coder:1.5b",
+      "ai_status": "malformed",
+      "ai_response_sha256": "071757417829d9c8baee8606d257b99e88a6ca00d4cc4c29ff7636063f0f89df",
+      "ai_detected_intended_bug": "Unreviewed",
+      "ai_detection_candidate_heuristic": false,
+      "ai_number_of_findings": null,
+      "pylint_detected_functional_issue": "No",
+      "pylint_status": "ok",
+      "pylint_total_findings": 2,
+      "ai_produced_fix": false,
+      "original_tests_passed": 1,
+      "original_tests_failed": 2,
+      "original_test_errors": 0,
+      "corrected_tests_passed": 0,
+      "corrected_tests_failed": 0,
+      "corrected_test_errors": 0,
+      "corrected_test_status": "not_run",
+      "ai_fix_successful": false,
+      "reference_tests_passed": 3,
+      "analysis_seconds": 20.143,
+      "external_api_cost_usd": 0,
+      "prompt_tokens": null,
+      "completion_tokens": null
+    }
+  ],
+  "evidence": [
+    {
+      "case": {
+        "id": "01-off-by-one",
+        "title": "Average skips the last value",
+        "category": "off-by-one",
+        "aliases": [
+          "off-by-one",
+          "loop boundary"
+        ],
+        "bug_lines": [
+          3
+        ],
+        "expected_behavior": "Return the arithmetic mean of all values; reject an empty sequence with ValueError.",
+        "pylint_symbols": [],
+        "source": "def average(nums):\n    total = 0\n    for i in range(len(nums) - 1):\n        total += nums[i]\n    return total / len(nums)\n",
+        "tests": "import pytest\nfrom candidate import average\n\ndef test_all_values():\n    assert average([2, 4, 6]) == pytest.approx(4)\n\ndef test_single_value():\n    assert average([7]) == 7\n\ndef test_empty_input():\n    with pytest.raises(ValueError):\n        average([])\n",
+        "reference": "def average(nums):\n    if not nums:\n        raise ValueError(\"An average requires at least one value.\")\n    return sum(nums) / len(nums)\n"
+      },
+      "measurements": {
+        "case_id": "01-off-by-one",
+        "bug_category": "off-by-one",
+        "ollama_model": "qwen2.5-coder:1.5b",
+        "ai_status": "malformed",
+        "ai_response_sha256": "9b681cbbd56f10897d21951835278e8644dd13ba45e93aa2639b3d223dbd2977",
+        "ai_detected_intended_bug": "Unreviewed",
+        "ai_detection_candidate_heuristic": false,
+        "ai_number_of_findings": null,
+        "pylint_detected_functional_issue": "No",
+        "pylint_status": "ok",
+        "pylint_total_findings": 2,
+        "ai_produced_fix": false,
+        "original_tests_passed": 0,
+        "original_tests_failed": 3,
+        "original_test_errors": 0,
+        "corrected_tests_passed": 0,
+        "corrected_tests_failed": 0,
+        "corrected_test_errors": 0,
+        "corrected_test_status": "not_run",
+        "ai_fix_successful": false,
+        "reference_tests_passed": 3,
+        "analysis_seconds": 27.762,
+        "external_api_cost_usd": 0,
+        "prompt_tokens": null,
+        "completion_tokens": null
+      },
+      "report": {
+        "source": "def average(nums):\n    total = 0\n    for i in range(len(nums) - 1):\n        total += nums[i]\n    return total / len(nums)\n",
+        "tests": "import pytest\nfrom candidate import average\n\ndef test_all_values():\n    assert average([2, 4, 6]) == pytest.approx(4)\n\ndef test_single_value():\n    assert average([7]) == 7\n\ndef test_empty_input():\n    with pytest.raises(ValueError):\n        average([])\n",
+        "model": "qwen2.5-coder:1.5b",
+        "pylint": {
+          "status": "ok",
+          "messages": [
+            {
+              "message": "Missing module docstring",
+              "category": "convention",
+              "line": 1,
+              "column": 0,
+              "symbol": "missing-module-docstring",
+              "message_id": "C0114"
+            },
+            {
+              "message": "Missing function or method docstring",
+              "category": "convention",
+              "line": 1,
+              "column": 0,
+              "symbol": "missing-function-docstring",
+              "message_id": "C0116"
+            }
+          ],
+          "score": 6.0,
+          "error": null,
+          "output": "{\n    \"messages\": [\n        {\n            \"type\": \"convention\",\n            \"symbol\": \"missing-module-docstring\",\n            \"message\": \"Missing module docstring\",\n            \"messageId\": \"C0114\",\n            \"confidence\": \"HIGH\",\n            \"module\": \"candidate\",\n            \"obj\": \"\",\n            \"line\": 1,\n            \"column\": 0,\n            \"endLine\": null,\n            \"endColumn\": null,\n            \"path\": \"candidate.py\",\n            \"absolutePath\": \"C:\\\\Users\\\\saira\\\\AppData\\\\Local\\\\Temp\\\\bug-hunter-lint-31zbb913\\\\candidate.py\"\n        },\n        {\n            \"type\": \"convention\",\n            \"symbol\": \"missing-function-docstring\",\n            \"message\": \"Missing function or method docstring\",\n            \"messageId\": \"C0116\",\n            \"confidence\": \"HIGH\",\n            \"module\": \"candidate\",\n            \"obj\": \"average\",\n            \"line\": 1,\n            \"column\": 0,\n            \"endLine\": 1,\n            \"endColumn\": 11,\n            \"path\": \"candidate.py\",\n            \"absolutePath\": \"C:\\\\Users\\\\saira\\\\AppData\\\\Local\\\\Temp\\\\bug-hunter-lint-31zbb913\\\\candidate.py\"\n        }\n    ],\n    \"statistics\": {\n        \"messageTypeCount\": {\n            \"fatal\": 0,\n            \"error\": 0,\n            \"warning\": 0,\n            \"refactor\": 0,\n            \"convention\": 2,\n            \"info\": 0\n        },\n        \"modulesLinted\": 3,\n        \"score\": 6.0\n    }\n}\n"
+        },
+        "ai": {
+          "status": "malformed",
+          "model": "qwen2.5-coder:1.5b",
+          "analysis": null,
+          "error": "AI reported a line outside the original source.",
+          "raw_response": "{\n  \"summary\": \"The function `average` does not handle an empty input correctly.\",\n  \"findings\": [\n    {\n      \"title\": \"Incorrect Line\",\n      \"category\": \"Code\",\n      \"line\": 10,\n      \"severity\": \"High\",\n      \"explanation\": \"The function `average` does not check if the input list `nums` is empty before attempting to calculate the sum. If `nums` is empty, the function will attempt to divide by zero, which raises a `ZeroDivisionError`.\",\n      \"why_incorrect\": \"The function does not check if the input list `nums` is empty before attempting to calculate the sum. If `nums` is empty, the function will attempt to divide by zero, which raises a `ZeroDivisionError`.\",\n      \"suggested_fix\": \"Add a check to see if `nums` is empty before attempting to calculate the sum. If `nums` is empty, raise a `ValueError` with a descriptive error message.\"\n    }\n  ],\n  \"corrected_code\": \"def average(nums):\\n    if not nums:\\n        raise ValueError('Input list is empty')\\n    total = 0\\n    for i in range(len(nums) - 1):\\n        total += nums[i]\\n    return total / len(nums)\"\n}",
+          "recovered": false,
+          "prompt_tokens": null,
+          "completion_tokens": null
+        },
+        "original_tests": {
+          "status": "failed",
+          "passed": 0,
+          "failed": 3,
+          "errors": 0,
+          "skipped": 0,
+          "collected": 3,
+          "exit_code": 1,
+          "stdout": "============================= test session starts =============================\nplatform win32 -- Python 3.12.10, pytest-9.1.1, pluggy-1.6.0 -- C:\\Users\\saira\\Documents\\psgv-sweng889\\final-project\\bug-hunter\\.venv\\Scripts\\python.exe\nrootdir: C:\\Users\\saira\\AppData\\Local\\Temp\\bug-hunter-tests-owevep54\ncollecting ... collected 3 items\n\ntest_candidate.py::test_all_values FAILED                                [ 33%]\ntest_candidate.py::test_single_value FAILED                              [ 66%]\ntest_candidate.py::test_empty_input FAILED                               [100%]\n\n================================== FAILURES ===================================\n_______________________________ test_all_values _______________________________\ntest_candidate.py:5: in test_all_values\n    assert average([2, 4, 6]) == pytest.approx(4)\nE   assert 2.0 == 4 ± 4.0e-06\nE     \nE     comparison failed\nE     Obtained: 2.0\nE     Expected: 4 ± 4.0e-06\n______________________________ test_single_value ______________________________\ntest_candidate.py:8: in test_single_value\n    assert average([7]) == 7\nE   assert 0.0 == 7\nE    +  where 0.0 = average([7])\n______________________________ test_empty_input _______________________________\ntest_candidate.py:12: in test_empty_input\n    average([])\ncandidate.py:5: in average\n    return total / len(nums)\n           ^^^^^^^^^^^^^^^^^\nE   ZeroDivisionError: division by zero\n=========================== short test summary info ===========================\nFAILED test_candidate.py::test_all_values - assert 2.0 == 4 ± 4.0e-06\nFAILED test_candidate.py::test_single_value - assert 0.0 == 7\nFAILED test_candidate.py::test_empty_input - ZeroDivisionError: division by zero\n============================== 3 failed in 0.14s ==============================\n",
+          "stderr": "",
+          "duration": 0.7956189999822527,
+          "message": ""
+        },
+        "corrected_tests": {
+          "status": "not_run",
+          "passed": 0,
+          "failed": 0,
+          "errors": 0,
+          "skipped": 0,
+          "collected": 0,
+          "exit_code": null,
+          "stdout": "",
+          "stderr": "",
+          "duration": 0.0,
+          "message": "No validated AI correction is available."
+        },
+        "duration": 27.068179599998984,
+        "fix_verified": false,
+        "comparison": "No code change was proposed; no repair was verified.",
+        "warnings": []
+      },
+      "reference_tests": {
+        "status": "passed",
+        "passed": 3,
+        "failed": 0,
+        "errors": 0,
+        "skipped": 0,
+        "collected": 3,
+        "exit_code": 0,
+        "stdout": "============================= test session starts =============================\nplatform win32 -- Python 3.12.10, pytest-9.1.1, pluggy-1.6.0 -- C:\\Users\\saira\\Documents\\psgv-sweng889\\final-project\\bug-hunter\\.venv\\Scripts\\python.exe\nrootdir: C:\\Users\\saira\\AppData\\Local\\Temp\\bug-hunter-tests-ftalsf7f\ncollecting ... collected 3 items\n\ntest_candidate.py::test_all_values PASSED                                [ 33%]\ntest_candidate.py::test_single_value PASSED                              [ 66%]\ntest_candidate.py::test_empty_input PASSED                               [100%]\n\n============================== 3 passed in 0.01s ==============================\n",
+        "stderr": "",
+        "duration": 0.6404954000026919,
+        "message": ""
+      }
+    },
+    {
+      "case": {
+        "id": "02-comparison",
+        "title": "Adult age boundary",
+        "category": "wrong comparison",
+        "aliases": [
+          "comparison",
+          "boundary"
+        ],
+        "bug_lines": [
+          2
+        ],
+        "expected_behavior": "Return True for ages at least 18, False below 18.",
+        "pylint_symbols": [],
+        "source": "def is_adult(age):\n    return age > 18\n",
+        "tests": "from candidate import is_adult\n\ndef test_boundary():\n    assert is_adult(18) is True\n\ndef test_below():\n    assert is_adult(17) is False\n\ndef test_above():\n    assert is_adult(25) is True\n",
+        "reference": "def is_adult(age):\n    return age >= 18\n"
+      },
+      "measurements": {
+        "case_id": "02-comparison",
+        "bug_category": "wrong comparison",
+        "ollama_model": "qwen2.5-coder:1.5b",
+        "ai_status": "malformed",
+        "ai_response_sha256": "ebb39400eea72ad2a466286d223fa5663e3b46f721c64aa7a291b6f6b3d288fd",
+        "ai_detected_intended_bug": "Unreviewed",
+        "ai_detection_candidate_heuristic": false,
+        "ai_number_of_findings": null,
+        "pylint_detected_functional_issue": "No",
+        "pylint_status": "ok",
+        "pylint_total_findings": 2,
+        "ai_produced_fix": false,
+        "original_tests_passed": 2,
+        "original_tests_failed": 1,
+        "original_test_errors": 0,
+        "corrected_tests_passed": 0,
+        "corrected_tests_failed": 0,
+        "corrected_test_errors": 0,
+        "corrected_test_status": "not_run",
+        "ai_fix_successful": false,
+        "reference_tests_passed": 3,
+        "analysis_seconds": 13.02,
+        "external_api_cost_usd": 0,
+        "prompt_tokens": null,
+        "completion_tokens": null
+      },
+      "report": {
+        "source": "def is_adult(age):\n    return age > 18\n",
+        "tests": "from candidate import is_adult\n\ndef test_boundary():\n    assert is_adult(18) is True\n\ndef test_below():\n    assert is_adult(17) is False\n\ndef test_above():\n    assert is_adult(25) is True\n",
+        "model": "qwen2.5-coder:1.5b",
+        "pylint": {
+          "status": "ok",
+          "messages": [
+            {
+              "message": "Missing module docstring",
+              "category": "convention",
+              "line": 1,
+              "column": 0,
+              "symbol": "missing-module-docstring",
+              "message_id": "C0114"
+            },
+            {
+              "message": "Missing function or method docstring",
+              "category": "convention",
+              "line": 1,
+              "column": 0,
+              "symbol": "missing-function-docstring",
+              "message_id": "C0116"
+            }
+          ],
+          "score": 0.0,
+          "error": null,
+          "output": "{\n    \"messages\": [\n        {\n            \"type\": \"convention\",\n            \"symbol\": \"missing-module-docstring\",\n            \"message\": \"Missing module docstring\",\n            \"messageId\": \"C0114\",\n            \"confidence\": \"HIGH\",\n            \"module\": \"candidate\",\n            \"obj\": \"\",\n            \"line\": 1,\n            \"column\": 0,\n            \"endLine\": null,\n            \"endColumn\": null,\n            \"path\": \"candidate.py\",\n            \"absolutePath\": \"C:\\\\Users\\\\saira\\\\AppData\\\\Local\\\\Temp\\\\bug-hunter-lint-5_sqovxj\\\\candidate.py\"\n        },\n        {\n            \"type\": \"convention\",\n            \"symbol\": \"missing-function-docstring\",\n            \"message\": \"Missing function or method docstring\",\n            \"messageId\": \"C0116\",\n            \"confidence\": \"HIGH\",\n            \"module\": \"candidate\",\n            \"obj\": \"is_adult\",\n            \"line\": 1,\n            \"column\": 0,\n            \"endLine\": 1,\n            \"endColumn\": 12,\n            \"path\": \"candidate.py\",\n            \"absolutePath\": \"C:\\\\Users\\\\saira\\\\AppData\\\\Local\\\\Temp\\\\bug-hunter-lint-5_sqovxj\\\\candidate.py\"\n        }\n    ],\n    \"statistics\": {\n        \"messageTypeCount\": {\n            \"fatal\": 0,\n            \"error\": 0,\n            \"warning\": 0,\n            \"refactor\": 0,\n            \"convention\": 2,\n            \"info\": 0\n        },\n        \"modulesLinted\": 3,\n        \"score\": 0\n    }\n}\n"
+        },
+        "ai": {
+          "status": "malformed",
+          "model": "qwen2.5-coder:1.5b",
+          "analysis": null,
+          "error": "AI reported a line outside the original source.",
+          "raw_response": "{\n  \"summary\": \"The function `is_adult` does not correctly handle the case where the input age is exactly 18.\",\n  \"findings\": [\n    {\n      \"title\": \"Incorrect Behavior\",\n      \"category\": \"Bug\",\n      \"line\": 3,\n      \"severity\": \"High\",\n      \"explanation\": \"The function `is_adult` returns `True` for ages exactly 18, which is incorrect. The function should return `True` for ages greater than 18 and `False` for ages less than or equal to 18.\",\n      \"why_incorrect\": \"The function does not check if the age is exactly 18 before returning `True`.\",\n      \"suggested_fix\": \"Add a check to see if the age is exactly 18 before returning `True`.\"\n    }\n  ],\n  \"corrected_code\": \"def is_adult(age):\\n    if age == 18:\\n        return False\\n    return age > 18\"\n}",
+          "recovered": false,
+          "prompt_tokens": null,
+          "completion_tokens": null
+        },
+        "original_tests": {
+          "status": "failed",
+          "passed": 2,
+          "failed": 1,
+          "errors": 0,
+          "skipped": 0,
+          "collected": 3,
+          "exit_code": 1,
+          "stdout": "============================= test session starts =============================\nplatform win32 -- Python 3.12.10, pytest-9.1.1, pluggy-1.6.0 -- C:\\Users\\saira\\Documents\\psgv-sweng889\\final-project\\bug-hunter\\.venv\\Scripts\\python.exe\nrootdir: C:\\Users\\saira\\AppData\\Local\\Temp\\bug-hunter-tests-vzqs4pca\ncollecting ... collected 3 items\n\ntest_candidate.py::test_boundary FAILED                                  [ 33%]\ntest_candidate.py::test_below PASSED                                     [ 66%]\ntest_candidate.py::test_above PASSED                                     [100%]\n\n================================== FAILURES ===================================\n________________________________ test_boundary ________________________________\ntest_candidate.py:4: in test_boundary\n    assert is_adult(18) is True\nE   assert False is True\nE    +  where False = is_adult(18)\n=========================== short test summary info ===========================\nFAILED test_candidate.py::test_boundary - assert False is True\n========================= 1 failed, 2 passed in 0.08s =========================\n",
+          "stderr": "",
+          "duration": 0.6104269000061322,
+          "message": ""
+        },
+        "corrected_tests": {
+          "status": "not_run",
+          "passed": 0,
+          "failed": 0,
+          "errors": 0,
+          "skipped": 0,
+          "collected": 0,
+          "exit_code": null,
+          "stdout": "",
+          "stderr": "",
+          "duration": 0.0,
+          "message": "No validated AI correction is available."
+        },
+        "duration": 12.465215599979274,
+        "fix_verified": false,
+        "comparison": "No code change was proposed; no repair was verified.",
+        "warnings": []
+      },
+      "reference_tests": {
+        "status": "passed",
+        "passed": 3,
+        "failed": 0,
+        "errors": 0,
+        "skipped": 0,
+        "collected": 3,
+        "exit_code": 0,
+        "stdout": "============================= test session starts =============================\nplatform win32 -- Python 3.12.10, pytest-9.1.1, pluggy-1.6.0 -- C:\\Users\\saira\\Documents\\psgv-sweng889\\final-project\\bug-hunter\\.venv\\Scripts\\python.exe\nrootdir: C:\\Users\\saira\\AppData\\Local\\Temp\\bug-hunter-tests-6m8dty65\ncollecting ... collected 3 items\n\ntest_candidate.py::test_boundary PASSED                                  [ 33%]\ntest_candidate.py::test_below PASSED                                     [ 66%]\ntest_candidate.py::test_above PASSED                                     [100%]\n\n============================== 3 passed in 0.01s ==============================\n",
+        "stderr": "",
+        "duration": 0.5156586000230163,
+        "message": ""
+      }
+    },
+    {
+      "case": {
+        "id": "07-boolean",
+        "title": "Weekend predicate cannot be true",
+        "category": "bad boolean condition",
+        "aliases": [
+          "boolean",
+          "logical",
+          "condition"
+        ],
+        "bug_lines": [
+          2
+        ],
+        "expected_behavior": "Saturday and Sunday are weekends; all other day strings are not.",
+        "pylint_symbols": [],
+        "source": "def is_weekend(day):\n    return day == \"Saturday\" and day == \"Sunday\"\n",
+        "tests": "from candidate import is_weekend\n\ndef test_saturday():\n    assert is_weekend(\"Saturday\") is True\n\ndef test_sunday():\n    assert is_weekend(\"Sunday\") is True\n\ndef test_weekday():\n    assert is_weekend(\"Monday\") is False\n",
+        "reference": "def is_weekend(day):\n    return day in {\"Saturday\", \"Sunday\"}\n"
+      },
+      "measurements": {
+        "case_id": "07-boolean",
+        "bug_category": "bad boolean condition",
+        "ollama_model": "qwen2.5-coder:1.5b",
+        "ai_status": "malformed",
+        "ai_response_sha256": "071757417829d9c8baee8606d257b99e88a6ca00d4cc4c29ff7636063f0f89df",
+        "ai_detected_intended_bug": "Unreviewed",
+        "ai_detection_candidate_heuristic": false,
+        "ai_number_of_findings": null,
+        "pylint_detected_functional_issue": "No",
+        "pylint_status": "ok",
+        "pylint_total_findings": 2,
+        "ai_produced_fix": false,
+        "original_tests_passed": 1,
+        "original_tests_failed": 2,
+        "original_test_errors": 0,
+        "corrected_tests_passed": 0,
+        "corrected_tests_failed": 0,
+        "corrected_test_errors": 0,
+        "corrected_test_status": "not_run",
+        "ai_fix_successful": false,
+        "reference_tests_passed": 3,
+        "analysis_seconds": 20.143,
+        "external_api_cost_usd": 0,
+        "prompt_tokens": null,
+        "completion_tokens": null
+      },
+      "report": {
+        "source": "def is_weekend(day):\n    return day == \"Saturday\" and day == \"Sunday\"\n",
+        "tests": "from candidate import is_weekend\n\ndef test_saturday():\n    assert is_weekend(\"Saturday\") is True\n\ndef test_sunday():\n    assert is_weekend(\"Sunday\") is True\n\ndef test_weekday():\n    assert is_weekend(\"Monday\") is False\n",
+        "model": "qwen2.5-coder:1.5b",
+        "pylint": {
+          "status": "ok",
+          "messages": [
+            {
+              "message": "Missing module docstring",
+              "category": "convention",
+              "line": 1,
+              "column": 0,
+              "symbol": "missing-module-docstring",
+              "message_id": "C0114"
+            },
+            {
+              "message": "Missing function or method docstring",
+              "category": "convention",
+              "line": 1,
+              "column": 0,
+              "symbol": "missing-function-docstring",
+              "message_id": "C0116"
+            }
+          ],
+          "score": 0.0,
+          "error": null,
+          "output": "{\n    \"messages\": [\n        {\n            \"type\": \"convention\",\n            \"symbol\": \"missing-module-docstring\",\n            \"message\": \"Missing module docstring\",\n            \"messageId\": \"C0114\",\n            \"confidence\": \"HIGH\",\n            \"module\": \"candidate\",\n            \"obj\": \"\",\n            \"line\": 1,\n            \"column\": 0,\n            \"endLine\": null,\n            \"endColumn\": null,\n            \"path\": \"candidate.py\",\n            \"absolutePath\": \"C:\\\\Users\\\\saira\\\\AppData\\\\Local\\\\Temp\\\\bug-hunter-lint-51s20de_\\\\candidate.py\"\n        },\n        {\n            \"type\": \"convention\",\n            \"symbol\": \"missing-function-docstring\",\n            \"message\": \"Missing function or method docstring\",\n            \"messageId\": \"C0116\",\n            \"confidence\": \"HIGH\",\n            \"module\": \"candidate\",\n            \"obj\": \"is_weekend\",\n            \"line\": 1,\n            \"column\": 0,\n            \"endLine\": 1,\n            \"endColumn\": 14,\n            \"path\": \"candidate.py\",\n            \"absolutePath\": \"C:\\\\Users\\\\saira\\\\AppData\\\\Local\\\\Temp\\\\bug-hunter-lint-51s20de_\\\\candidate.py\"\n        }\n    ],\n    \"statistics\": {\n        \"messageTypeCount\": {\n            \"fatal\": 0,\n            \"error\": 0,\n            \"warning\": 0,\n            \"refactor\": 0,\n            \"convention\": 2,\n            \"info\": 0\n        },\n        \"modulesLinted\": 3,\n        \"score\": 0\n    }\n}\n"
+        },
+        "ai": {
+          "status": "malformed",
+          "model": "qwen2.5-coder:1.5b",
+          "analysis": null,
+          "error": "AI reported a line outside the original source.",
+          "raw_response": "{\n  \"summary\": \"The function `is_weekend` does not correctly identify Saturday and Sunday as weekends.\",\n  \"findings\": [\n    {\n      \"title\": \"Incorrect Condition\",\n      \"category\": \"Code\",\n      \"line\": 3,\n      \"severity\": \"High\",\n      \"explanation\": \"The function checks if the day is either 'Saturday' or 'Sunday', but it does not correctly handle the case where the day is both.\",\n      \"why_incorrect\": \"The function checks for both 'Saturday' and 'Sunday' in the same condition, which is incorrect. It should check for either 'Saturday' or 'Sunday' separately.\",\n      \"suggested_fix\": \"Change the condition to check for either 'Saturday' or 'Sunday' separately.\"\n    }\n  ],\n  \"corrected_code\": \"def is_weekend(day):\\n    return day == \\\"Saturday\\\" or day == \\\"Sunday\\\"\"\n}",
+          "recovered": false,
+          "prompt_tokens": null,
+          "completion_tokens": null
+        },
+        "original_tests": {
+          "status": "failed",
+          "passed": 1,
+          "failed": 2,
+          "errors": 0,
+          "skipped": 0,
+          "collected": 3,
+          "exit_code": 1,
+          "stdout": "============================= test session starts =============================\nplatform win32 -- Python 3.12.10, pytest-9.1.1, pluggy-1.6.0 -- C:\\Users\\saira\\Documents\\psgv-sweng889\\final-project\\bug-hunter\\.venv\\Scripts\\python.exe\nrootdir: C:\\Users\\saira\\AppData\\Local\\Temp\\bug-hunter-tests-4bddnehf\ncollecting ... collected 3 items\n\ntest_candidate.py::test_saturday FAILED                                  [ 33%]\ntest_candidate.py::test_sunday FAILED                                    [ 66%]\ntest_candidate.py::test_weekday PASSED                                   [100%]\n\n================================== FAILURES ===================================\n________________________________ test_saturday ________________________________\ntest_candidate.py:4: in test_saturday\n    assert is_weekend(\"Saturday\") is True\nE   AssertionError: assert False is True\nE    +  where False = is_weekend('Saturday')\n_________________________________ test_sunday _________________________________\ntest_candidate.py:7: in test_sunday\n    assert is_weekend(\"Sunday\") is True\nE   AssertionError: assert False is True\nE    +  where False = is_weekend('Sunday')\n=========================== short test summary info ===========================\nFAILED test_candidate.py::test_saturday - AssertionError: assert False is True\nFAILED test_candidate.py::test_sunday - AssertionError: assert False is True\n========================= 2 failed, 1 passed in 0.09s =========================\n",
+          "stderr": "",
+          "duration": 0.6569433000113349,
+          "message": ""
+        },
+        "corrected_tests": {
+          "status": "not_run",
+          "passed": 0,
+          "failed": 0,
+          "errors": 0,
+          "skipped": 0,
+          "collected": 0,
+          "exit_code": null,
+          "stdout": "",
+          "stderr": "",
+          "duration": 0.0,
+          "message": "No validated AI correction is available."
+        },
+        "duration": 19.552762800012715,
+        "fix_verified": false,
+        "comparison": "No code change was proposed; no repair was verified.",
+        "warnings": []
+      },
+      "reference_tests": {
+        "status": "passed",
+        "passed": 3,
+        "failed": 0,
+        "errors": 0,
+        "skipped": 0,
+        "collected": 3,
+        "exit_code": 0,
+        "stdout": "============================= test session starts =============================\nplatform win32 -- Python 3.12.10, pytest-9.1.1, pluggy-1.6.0 -- C:\\Users\\saira\\Documents\\psgv-sweng889\\final-project\\bug-hunter\\.venv\\Scripts\\python.exe\nrootdir: C:\\Users\\saira\\AppData\\Local\\Temp\\bug-hunter-tests-j0oyd7kv\ncollecting ... collected 3 items\n\ntest_candidate.py::test_saturday PASSED                                  [ 33%]\ntest_candidate.py::test_sunday PASSED                                    [ 66%]\ntest_candidate.py::test_weekday PASSED                                   [100%]\n\n============================== 3 passed in 0.01s ==============================\n",
+        "stderr": "",
+        "duration": 0.548128700000234,
+        "message": ""
+      }
+    }
+  ]
+}

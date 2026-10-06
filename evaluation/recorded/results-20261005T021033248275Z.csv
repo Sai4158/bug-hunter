@@ -1,0 +1,13 @@
+case_id,bug_category,ollama_model,ai_status,ai_detected_intended_bug,ai_detection_candidate_heuristic,ai_number_of_findings,pylint_detected_functional_issue,pylint_status,pylint_total_findings,ai_produced_fix,original_tests_passed,original_tests_failed,original_test_errors,corrected_tests_passed,corrected_tests_failed,corrected_test_errors,corrected_test_status,ai_fix_successful,reference_tests_passed,analysis_seconds,external_api_cost_usd,prompt_tokens,completion_tokens
+01-off-by-one,off-by-one,qwen2.5-coder:7b,not_run,Unreviewed,,,No,ok,2,,0,3,0,,,,not_run,,3,3.609,0,,
+02-comparison,wrong comparison,qwen2.5-coder:7b,not_run,Unreviewed,,,No,ok,2,,2,1,0,,,,not_run,,3,3.792,0,,
+03-return,missing return,qwen2.5-coder:7b,not_run,Unreviewed,,,No,ok,3,,0,2,0,,,,not_run,,2,4.154,0,,
+04-arithmetic,incorrect arithmetic,qwen2.5-coder:7b,not_run,Unreviewed,,,No,ok,2,,1,2,0,,,,not_run,,3,6.201,0,,
+05-loop,wrong loop boundary,qwen2.5-coder:7b,not_run,Unreviewed,,,No,ok,2,,1,2,0,,,,not_run,,3,4.863,0,,
+06-variable,incorrect variable,qwen2.5-coder:7b,not_run,Unreviewed,,,No,ok,3,,0,2,0,,,,not_run,,2,5.345,0,,
+07-boolean,bad boolean condition,qwen2.5-coder:7b,not_run,Unreviewed,,,No,ok,2,,1,2,0,,,,not_run,,3,3.256,0,,
+08-none,None handling,qwen2.5-coder:7b,not_run,Unreviewed,,,No,ok,2,,2,1,0,,,,not_run,,3,4.591,0,,
+09-zero,divide-by-zero edge case,qwen2.5-coder:7b,not_run,Unreviewed,,,No,ok,2,,1,1,0,,,,not_run,,2,5.389,0,,
+10-index,list/index bug,qwen2.5-coder:7b,not_run,Unreviewed,,,No,ok,2,,0,3,0,,,,not_run,,3,4.263,0,,
+11-exception,exception-handling bug,qwen2.5-coder:7b,not_run,Unreviewed,,,Yes,ok,3,,1,1,0,,,,not_run,,2,4.61,0,,
+12-argument,incorrect function argument,qwen2.5-coder:7b,not_run,Unreviewed,,,No,ok,2,,1,1,0,,,,not_run,,2,5.303,0,,

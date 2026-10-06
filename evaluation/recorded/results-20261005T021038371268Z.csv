@@ -1,0 +1,4 @@
+case_id,bug_category,ollama_model,ai_status,ai_detected_intended_bug,ai_detection_candidate_heuristic,ai_number_of_findings,pylint_detected_functional_issue,pylint_status,pylint_total_findings,ai_produced_fix,original_tests_passed,original_tests_failed,original_test_errors,corrected_tests_passed,corrected_tests_failed,corrected_test_errors,corrected_test_status,ai_fix_successful,reference_tests_passed,analysis_seconds,external_api_cost_usd,prompt_tokens,completion_tokens
+01-off-by-one,off-by-one,qwen2.5:1.5b,ok,Unreviewed,False,0,No,ok,2,True,0,3,0,1,2,0,failed,False,3,29.305,0,739,85
+02-comparison,wrong comparison,qwen2.5:1.5b,ok,Unreviewed,False,0,No,ok,2,True,2,1,0,3,0,0,passed,True,3,14.743,0,706,52
+07-boolean,bad boolean condition,qwen2.5:1.5b,ok,Unreviewed,False,0,No,ok,2,True,1,2,0,3,0,0,passed,True,3,14.341,0,709,51

@@ -1,0 +1,4 @@
+*.sh text eol=lf
+evaluation/recorded/*.json -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+evaluation/recorded/*.csv -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+evaluation/recorded/smoke/*.json -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
