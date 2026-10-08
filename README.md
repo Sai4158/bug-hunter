@@ -272,11 +272,13 @@ docker compose -f compose.ollama.yml exec ollama ollama pull qwen2.5-coder:3b
 docker compose -f compose.ollama.yml exec ollama ollama list
 ```
 
-It pins the official Ollama image to `0.35.1` by default, binds only loopback,
+It pins the official Ollama image to `0.34.0` by default, binds only loopback,
 checks service health, and retains model downloads in a named volume. Set
 `OLLAMA_IMAGE_TAG` explicitly to change the runtime version. Weights are not
 downloaded by Compose startup; the pull command above is your explicit download.
 Python/Streamlit still run through the project helpers, not inside this container.
+The official Docker image is several GB even before model weights; choose native
+Ollama if you do not need Docker. First startup downloads the image if absent.
 
 Do **not** start another service on an occupied port. Reuse an existing native or
 Docker Ollama instead. For an existing `bug-hunter-ollama` container, use

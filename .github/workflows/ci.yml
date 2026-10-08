@@ -36,7 +36,6 @@ jobs:
             python: '3.11'
             interpreter: .venv/bin/python
     env:
-      OLLAMA_BASE_URL: http://127.0.0.1:1
       PYTHONUTF8: '1'
     steps:
       - name: Check out source
