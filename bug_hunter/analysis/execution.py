@@ -1,8 +1,10 @@
 """Replaceable subprocess boundary; a timeout is not a security sandbox."""
 
+import math
 import os
 import signal
 import subprocess
+import threading
 import time
 from dataclasses import dataclass
 from pathlib import Path
@@ -15,11 +17,12 @@ class ExecutionResult:
     stderr: str
     duration: float
     timed_out: bool = False
+    output_limited: bool = False
 
 
 def run_process(args: list[str], cwd: Path, timeout: float) -> ExecutionResult:
-    if timeout <= 0:
-        raise ValueError("Execution timeout must be positive.")
+    if not math.isfinite(timeout) or timeout <= 0:
+        raise ValueError("Execution timeout must be finite and positive.")
     # Do not forward project Python paths, pytest plugins, or credential variables.
     allowed = {"PATH", "SYSTEMROOT", "WINDIR", "TEMP", "TMP", "HOME",
                "USERPROFILE", "LANG", "LC_ALL"}
@@ -30,13 +33,48 @@ def run_process(args: list[str], cwd: Path, timeout: float) -> ExecutionResult:
     started = time.perf_counter()
     process = subprocess.Popen(
         args, cwd=cwd, env=env, stdout=subprocess.PIPE, stderr=subprocess.PIPE,
-        text=True, encoding="utf-8", errors="replace", shell=False, **options,
+        bufsize=0, shell=False, **options,
     )
+    limit = 100_000
+    buffers = [bytearray(), bytearray()]
+    limited = [False, False]
+    stop_reading = threading.Event()
+    exceeded = threading.Event()
+    read_errors = []
+
+    def collect(stream, index):
+        try:
+            while not stop_reading.is_set():
+                chunk = stream.read(8192)
+                if not chunk:
+                    break
+                remaining = limit - len(buffers[index])
+                buffers[index].extend(chunk[:remaining])
+                if len(chunk) > remaining:
+                    limited[index] = True
+                    exceeded.set()
+                    break
+        except (OSError, ValueError) as exc:
+            if not stop_reading.is_set():
+                read_errors.append(exc)
+        finally:
+            stream.close()
+
+    readers = [threading.Thread(target=collect, args=(stream, index), daemon=True)
+               for index, stream in enumerate((process.stdout, process.stderr))]
+    for reader in readers:
+        reader.start()
     timed_out = False
-    try:
-        stdout, stderr = process.communicate(timeout=timeout)
-    except subprocess.TimeoutExpired:
-        timed_out = True
+    deadline = time.monotonic() + timeout
+    while process.poll() is None or any(reader.is_alive() for reader in readers):
+        if exceeded.is_set():
+            break
+        if time.monotonic() >= deadline:
+            timed_out = True
+            break
+        exceeded.wait(0.01)
+    output_limited = exceeded.is_set()
+    if timed_out or output_limited:
         if os.name == "nt":
             try:
                 subprocess.run(["taskkill", "/PID", str(process.pid), "/T", "/F"],
@@ -50,14 +88,17 @@ def run_process(args: list[str], cwd: Path, timeout: float) -> ExecutionResult:
                 pass
         if process.poll() is None:
             process.kill()
-        try:
-            stdout, stderr = process.communicate(timeout=5)
-        except subprocess.TimeoutExpired:
-            process.stdout.close()
-            process.stderr.close()
-            stdout, stderr = "", "Process pipes did not close after termination."
-    limit = 100_000
-    def truncate(value):
-        return value if len(value) <= limit else value[:limit] + "\n[output truncated]"
-    return ExecutionResult(process.returncode, truncate(stdout), truncate(stderr),
-                           time.perf_counter() - started, timed_out)
+    process.wait(timeout=5)
+    for reader in readers:
+        reader.join(timeout=1)
+    stop_reading.set()
+    for stream in (process.stdout, process.stderr):
+        if not stream.closed:
+            stream.close()
+    if read_errors:
+        raise OSError(f"Could not capture subprocess output: {read_errors[0]}")
+    output = [bytes(buffer).decode("utf-8", errors="replace")
+              + ("\n[output truncated]" if limited[index] else "")
+              for index, buffer in enumerate(buffers)]
+    return ExecutionResult(process.returncode, *output, time.perf_counter() - started,
+                           timed_out, output_limited)

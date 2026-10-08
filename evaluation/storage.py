@@ -53,13 +53,27 @@ def read_run(path: Path) -> dict:
     else:
         with path.open(encoding="utf-8", newline="") as handle:
             data = {"results": list(csv.DictReader(handle)), "evidence": [], "limited_evidence": True}
+    if not isinstance(data, dict):
+        raise ValueError("Saved run must be a JSON object.")
     rows = data.get("results")
-    if not isinstance(rows, list) or not all(isinstance(row, dict) and row.get("case_id") for row in rows):
+    if not isinstance(rows, list) or not all(isinstance(row, dict)
+            and isinstance(row.get("case_id"), str) and row["case_id"].strip() for row in rows):
         raise ValueError("Saved run needs a results list with case IDs.")
     if len({row["case_id"] for row in rows}) != len(rows):
         raise ValueError("Duplicate case IDs in a saved run.")
-    evidence = {item["case"]["id"]: item for item in data.get("evidence", [])}
+    items = data.get("evidence", [])
+    if not isinstance(items, list) or not all(isinstance(item, dict)
+            and isinstance(item.get("case"), dict) and isinstance(item["case"].get("id"), str)
+            and isinstance(item.get("report"), dict) for item in items):
+        raise ValueError("Saved evidence must contain case objects and report objects.")
+    evidence = {item["case"]["id"]: item for item in items}
+    if len(evidence) != len(items):
+        raise ValueError("Duplicate case IDs in raw evidence.")
+    if path.suffix == ".json" and set(evidence) != {row["case_id"] for row in rows}:
+        raise ValueError("Raw evidence is missing or does not match the recorded cases.")
     for row in rows:
+        recorded_bool(row.get("ai_produced_fix"))
+        recorded_bool(row.get("ai_fix_successful"))
         duration = float(row.get("analysis_seconds") or 0)
         if not math.isfinite(duration) or duration < 0:
             raise ValueError("Invalid recorded duration.")
@@ -69,14 +83,33 @@ def read_run(path: Path) -> dict:
                 raise ValueError("Raw evidence is missing for a recorded case.")
             continue
         report = item["report"]
-        raw = report.get("ai", {}).get("raw_response", "")
+        ai = report.get("ai", {})
+        if not isinstance(ai, dict):
+            raise ValueError("Saved AI evidence must be an object.")
+        raw = ai.get("raw_response", "")
+        if not isinstance(raw, str):
+            raise ValueError("Saved model response must be text.")
+        analysis = ai.get("analysis")
+        if analysis is not None and (not isinstance(analysis, dict)
+                or not isinstance(analysis.get("summary"), str)
+                or not isinstance(analysis.get("corrected_code"), str)
+                or not isinstance(analysis.get("findings"), list)):
+            raise ValueError("Saved AI analysis does not have the expected display fields.")
+        if raw and not all(isinstance(item["case"].get(key), str)
+                           for key in ("source", "expected_behavior")):
+            raise ValueError("Reviewable evidence needs source and expected behavior.")
         response_hash = row.get("ai_response_sha256")
         if response_hash and hashlib.sha256(raw.encode("utf-8")).hexdigest() != response_hash:
             raise ValueError("Model response hash does not match recorded evidence.")
         if recorded_bool(row.get("ai_fix_successful")):
             original, fixed = report.get("original_tests", {}), report.get("corrected_tests", {})
-            code = (report.get("ai", {}).get("analysis") or {}).get("corrected_code", "")
-            if not (original.get("failed", 0) > 0 and original.get("status") == "failed"
+            code = (analysis or {}).get("corrected_code", "")
+            if not (isinstance(original, dict) and isinstance(fixed, dict)
+                    and all(type(result.get(key, 0)) is int and result.get(key, 0) >= 0
+                            for result in (original, fixed)
+                            for key in ("passed", "failed", "errors", "skipped", "collected"))
+                    and isinstance(report.get("source", ""), str)
+                    and original.get("failed", 0) > 0 and original.get("status") == "failed"
                     and fixed.get("status") == "passed" and fixed.get("exit_code") == 0
                     and fixed.get("passed", 0) > 0 and fixed.get("passed") == fixed.get("collected")
                     and not any(fixed.get(key, 0) for key in ("failed", "errors", "skipped"))
@@ -116,6 +149,8 @@ def load_reviews(run_path: Path, root: Path = REVIEWS) -> tuple[dict, list[str]]
     for path in sorted(root.glob("review-*.json")):
         try:
             record = json.loads(path.read_text(encoding="utf-8"))
+            if not isinstance(record, dict):
+                raise ValueError("Review record must be a JSON object.")
             if record.get("run_sha256") != digest:
                 continue
             if hashes.get(record["case_id"]) != record["response_sha256"]:

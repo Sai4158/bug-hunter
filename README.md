@@ -1,5 +1,7 @@
 # Bug Hunter
 
+[![Bug Hunter CI](https://github.com/Sai4158/bug-hunter/actions/workflows/ci.yml/badge.svg)](https://github.com/Sai4158/bug-hunter/actions/workflows/ci.yml)
+
 ## AI-Assisted Python Bug Detection & Fix Validation
 
 A SWENG 889 group-project proof of concept for finding functional Python bugs,
@@ -12,15 +14,28 @@ usage are not free, and model quality and speed depend on your machine.
 
 ## Project evidence
 
-| Artifact | Location |
+| Required item | Source / evidence |
 | --- | --- |
-| Behavioral requirements and numbered acceptance criteria | [Requirements and test mapping](docs/REQUIREMENTS.md) |
-| Architecture and interaction diagrams | [Architecture](docs/ARCHITECTURE.md) |
-| Actual local-model prompt and configuration | [LLM prompt](docs/LLM-PROMPT.md) |
-| Evaluation cases, results, and limitations | `evaluation/cases/`, `evaluation/recorded/`, [validation history](docs/VALIDATION.md) |
-| Automated tests and cross-platform CI | `tests/`, [workflow](.github/workflows/ci.yml), [actual CI runs](https://github.com/Sai4158/bug-hunter/actions/workflows/ci.yml) |
-| Issues, milestone, project board, and honest history | [Project tracking](docs/PROJECT-TRACKING.md) |
-| Sources and acknowledgments | [References](docs/REFERENCES.md) |
+| 1. Working POC and source code | `app.py`, `bug_hunter/`, [real operation checks](docs/VALIDATION.md) |
+| 2. README | This document |
+| 3. Installation and run instructions | [Quick start](#quick-start), `setup.*`, `start.*`, `stop.*`, `run.*` |
+| 4. Dependency file | [Pinned requirements](requirements.txt) |
+| 5. Tests | `tests/`; real counts in [validation history](docs/VALIDATION.md) |
+| 6. CI workflow | [Workflow](.github/workflows/ci.yml), [actual CI runs](https://github.com/Sai4158/bug-hunter/actions/workflows/ci.yml) |
+| 7. Architecture documentation | [Components and interaction diagrams](docs/ARCHITECTURE.md) |
+| 8. Requirements / acceptance criteria | [AC1–AC18 and test mapping](docs/REQUIREMENTS.md) |
+| 9. Evaluation cases / results | 12 cases in `evaluation/cases/`; preserved raw results in `evaluation/recorded/` |
+| 10. LLM prompts / configuration | [Actual runtime prompt and settings](docs/LLM-PROMPT.md), `bug_hunter/ai/ollama_provider.py` |
+| 11. Environment / optional Docker configuration | [.streamlit/config.toml](.streamlit/config.toml), [optional Ollama Compose](compose.ollama.yml), `setup_env.py` |
+| 12. Issues / milestone / board evidence | [Genuine dated planning records](docs/PROJECT-TRACKING.md), [public board](https://github.com/users/Sai4158/projects/3) |
+| 13. Incremental commit history | [Actual commits](https://github.com/Sai4158/bug-hunter/commits/main/); [import and history limitations](docs/PROJECT-TRACKING.md#honest-commit-history) |
+| 14. References / acknowledgments | [Primary sources and attribution](docs/REFERENCES.md) |
+
+Artifact presence does not establish model accuracy. Independent human evaluation
+is still [an open follow-up](https://github.com/Sai4158/bug-hunter/issues/4).
+Generated runs, environments, caches, and runtime files remain ignored; preserved
+sample results are intentionally tracked. Teammates install their own environment
+and model rather than copying a developer's runtime files.
 
 The POC runs entirely on the user computer:
 
@@ -362,7 +377,7 @@ default.
 ```text
 app.py                     Streamlit interface
 bug_hunter/                Analysis, local AI, Pylint, pytest, and results UI
-assets/                    Product styling and icon
+assets/                    Product styling
 evaluation/cases/          Controlled Python cases and tests
 evaluation/recorded/       Unchanged sample evidence shipped with the repo
 evaluation/results/        Your generated runs (ignored)
@@ -388,6 +403,11 @@ The application remains a single local Python project. It adds no database, clou
 AI, GitHub integration, or automatic commits.
 
 ## Safety and limitations
+
+Subprocess output is captured with a **100,000-byte limit per stream**. A process
+that exceeds it is stopped, and its test/lint result is reported as an error,
+never a verified fix. Execution timeouts must be finite and positive. Malformed
+saved evaluation/review files produce validation messages rather than an app crash.
 
 Only run code you trust. Temporary execution directories and timeouts provide
 isolation from project files, but **not a production security sandbox**. Executed
@@ -444,6 +464,45 @@ handling, UI behavior, evaluation integrity, and the setup helpers. These regres
 tests do not constitute a new model evaluation. See the historical validation
 notes for earlier platform checks; do not assume that every platform has been
 executed on every revision.
+
+### Final publication checks (October 8, 2026)
+
+The full Windows suite passed **144 tests**. The final review included live UI
+navigation, example loading, consent, model errors, results tabs, Presentation
+Mode, Evaluation, and a narrow-screen layout check. A scoped CSS correction makes
+the small-screen title sizing apply correctly under the pinned Streamlit version.
+
+In a new real 3B three-case evaluation, boundary comparison and skipped-first-value
+fixes passed all supplied tests. The average proposal still failed two tests and
+was correctly marked **not verified**. A separate average UI run rejected an
+out-of-range source line. These limitations are preserved, not presented as
+successful fixes. See [the exact results and timings](docs/VALIDATION.md#final-publication-checks--october-8-2026).
+
+The badge above links to actual GitHub CI. CI verifies regressions, not live model
+accuracy; independent human review remains necessary before accuracy claims.
+
+### Additional edge-case review (October 8, 2026)
+
+The subsequent 14-item artifact audit added a required-file regression check:
+Windows full suite **144 passed, 0 failed** in **33.59 seconds**. The public
+issues/milestone/board and published commit history were verified directly on
+GitHub. Streamlit health, Ollama availability, Compose configuration, compilation,
+dependencies, and preserved-evidence checks passed. The Linux counts below
+precede that additional artifact test. This describes the local pre-publication
+checkpoint, before new macOS or remote CI results were available.
+
+- Windows: **143 passed, 0 failed**. Linux Python 3.12 in a fresh temporary
+  environment: **141 passed, 2 Windows-only checks skipped**. The suite adds 20
+  regression cases for absent final newlines, corrupt saved evidence/reviews,
+  invalid booleans, nonfinite timeouts, excessive stdout/stderr, and Unicode output.
+- The confirmed crashes/diff problems were repaired; subprocess capture is now
+  bounded during execution, not only truncated afterward. Existing tests and
+  shipped raw evaluation results were preserved.
+- A new live boundary demo again verified the proposed fix (original **2 passed /
+  1 failed**, corrected **3 passed / 0 failed**). Ollama-unavailable mode retained
+  the static baseline and original tests. Model explanations still need review.
+- At this checkpoint, these changes had been tested locally on Windows and Linux.
+  The macOS/GitHub CI evidence below describes the preceding revision.
 
 ### Repository completion checks (October 8, 2026)
 

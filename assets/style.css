@@ -96,7 +96,7 @@ button:focus-visible { outline: 2px solid #6354d7; outline-offset: 3px; }
 }
 @media (max-width: 768px) {
   .block-container { padding: 1rem; }
-  h1 { gap: 10px; font-size: 2rem; }
+  [data-testid="stMain"] [data-testid="stHeadingWithActionElements"] h1 { gap: 10px; font-size: 2rem; }
   h1::before { flex-basis: 36px; width: 36px; height: 36px; border-radius: 12px; background-size: 22px; }
   .validation-value { font-size: 18px; }
   .product-intro p { font-size: 14px; }

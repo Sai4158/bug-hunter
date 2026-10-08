@@ -21,11 +21,11 @@ def render_evaluation(presentation=False):
     try:
         data = read_run(selected)
         reviews, review_issues = load_reviews(selected)
+        rows = data["results"]
+        summary = metrics(rows, reviews)
     except (ValueError, KeyError, TypeError, OSError) as exc:
         st.error(f"Saved evidence failed its integrity check: {exc}")
         return
-    rows = data["results"]
-    summary = metrics(rows, reviews)
     if data.get("limited_evidence"):
         st.warning("CSV-only historical export: raw AI/test evidence is unavailable for this file. No human-review form is offered.")
     for issue in review_issues:

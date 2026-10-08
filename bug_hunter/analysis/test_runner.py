@@ -56,6 +56,10 @@ def run_tests(code: str, tests: str, timeout: float = 10) -> TestResult:
         if process.timed_out:
             return TestResult(status="timeout", stdout=process.stdout, stderr=process.stderr,
                               duration=process.duration, message=f"Execution stopped after {timeout:g}s.")
+        if process.output_limited:
+            return TestResult(status="error", stdout=process.stdout, stderr=process.stderr,
+                              duration=process.duration, exit_code=process.returncode,
+                              message="Test output exceeded the 100,000-byte per-stream limit; fix is not verified.")
         report_path = path / "test_results.json"
         try:
             data = json.loads(report_path.read_text(encoding="utf-8"))

@@ -56,6 +56,10 @@ belong only in the ignored `.bug-hunter-runtime/` directory.
   not a production security sandbox; execute only code approved for this purpose.
 - Run the identical supplied tests against original and corrected code. Never
   change tests, inject reference fixes, or relax verification to manufacture success.
+- Keep subprocess capture bounded while reading (100,000 bytes per stream).
+  Output-limit termination is an error, not a passing or verified test result.
+- Reject corrupt saved evidence/review shapes with clear validation messages;
+  never rewrite the raw files to make them load successfully.
 - Preserve raw successes, failures, timings, and explanations. A pytest-verified
   fix is not proof of explanation accuracy or intended-bug detection.
 - Do not overwrite `evaluation/recorded/` or its `SHA256.json` evidence manifest.

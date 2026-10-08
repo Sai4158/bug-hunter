@@ -11,6 +11,24 @@ from bug_hunter.services import analyze_code
 ROOT = Path(__file__).resolve().parents[1]
 
 
+def test_submission_artifacts_are_present_and_nonempty():
+    required = [
+        "app.py", "README.md", "AGENTS.md", "requirements.txt",
+        "setup_env.py", "setup.bat", "setup.sh", "run.bat", "run.sh",
+        "start.bat", "start.sh", "stop.bat", "stop.sh",
+        ".github/workflows/ci.yml", ".streamlit/config.toml", "compose.ollama.yml",
+        "docs/ARCHITECTURE.md", "docs/REQUIREMENTS.md", "docs/LLM-PROMPT.md",
+        "docs/PROJECT-TRACKING.md", "docs/REFERENCES.md", "docs/VALIDATION.md",
+        "evaluation/recorded/README.md", "evaluation/recorded/SHA256.json",
+        "bug_hunter/ai/ollama_provider.py", "tests/test_services.py",
+    ]
+    for relative in required:
+        path = ROOT / relative
+        assert path.is_file() and path.stat().st_size > 0, relative
+    assert list((ROOT / "evaluation/recorded").glob("results-*.json"))
+    assert list((ROOT / "evaluation/recorded").glob("results-*.csv"))
+
+
 def test_requirements_map_every_criterion_to_existing_tests():
     text = (ROOT / "docs/REQUIREMENTS.md").read_text(encoding="utf-8")
     assert re.findall(r"^### AC(\d+) —", text, re.MULTILINE) == [str(i) for i in range(1, 19)]

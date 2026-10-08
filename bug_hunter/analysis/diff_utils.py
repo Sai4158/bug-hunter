@@ -6,10 +6,12 @@ from bug_hunter.models import TestResult
 
 
 def source_diff(original: str, corrected: str) -> str:
-    return "".join(difflib.unified_diff(
+    lines = difflib.unified_diff(
         original.splitlines(keepends=True), corrected.splitlines(keepends=True),
         fromfile="original.py", tofile="suggested.py",
-    ))
+    )
+    return "".join(line if line.endswith("\n") else line + "\n\\ No newline at end of file\n"
+                   for line in lines)
 
 
 def compare_results(original: TestResult, corrected: TestResult, changed: bool) -> tuple[bool, str]:

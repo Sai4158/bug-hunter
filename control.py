@@ -30,10 +30,10 @@ def control_lock():
         handle.seek(0)
         try:
             if os.name == "nt":
-                import msvcrt
+                import msvcrt  # pylint: disable=import-error  # Windows-only branch.
                 msvcrt.locking(handle.fileno(), msvcrt.LK_NBLCK, 1)
             else:
-                import fcntl
+                import fcntl  # pylint: disable=import-error  # Unix-only branch.
                 fcntl.flock(handle, fcntl.LOCK_EX | fcntl.LOCK_NB)
         except OSError as exc:
             raise RuntimeError("Another start/stop is in progress. Let it finish, or cancel its terminal with Ctrl+C.") from exc

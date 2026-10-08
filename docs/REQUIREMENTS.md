@@ -81,6 +81,9 @@ Python shall remain unverified with a clear warning.
 The same supplied tests shall run against original and proposed source in
 temporary directories using the project interpreter. Actual counts, exit status,
 and logs shall remain available. Execution shall have timeouts and bounded output.
+Timeouts shall be finite and positive. Captured subprocess output shall be limited
+to 100,000 bytes per stream; exceeding it shall stop execution and return an error
+rather than verify a fix.
 
 ### AC10 — Strict fix verification
 
@@ -130,6 +133,8 @@ recorded evidence shall remain byte-identical to its hash manifest. Human
 judgments shall be stored separately and tied to the exact evidence/response.
 Unreviewed judgments shall not count as confirmed detection or explanation
 accuracy. Heuristics and Pylint's dataset-symbol rubric shall be labeled separately.
+Malformed saved-run/review shapes and invalid recorded booleans shall produce
+clear validation messages instead of crashing the dashboard.
 
 ### AC17 — Portable, scoped setup and lifecycle
 
@@ -161,15 +166,15 @@ All references below are test function names in `tests/`.
 | AC5 | `test_hosted_or_ambiguous_provider_urls_are_rejected`, `test_local_model_discovery_excludes_cloud_models`, `test_exactly_one_generation_request_and_loaded_model_reuse` |
 | AC6 | `test_mode_recommendations_keep_quality_and_fast_options`, `test_performance_and_presentation_settings_do_not_change_inputs`, `test_missing_selected_model_is_not_sent_to_server` |
 | AC7 | `test_invalid_finding_fields_are_rejected`, `test_out_of_range_model_line_is_rejected`, `test_safe_recovery_accepts_only_a_valid_json_object` |
-| AC8 | `test_diff_shows_correct_change`, `test_ui_displays_independent_before_after_evidence` |
-| AC9 | `test_service_reuses_identical_tests_for_both_versions`, `test_unchanged_tests_produce_real_before_after_results`, `test_infinite_loop_is_terminated` |
+| AC8 | `test_diff_shows_correct_change`, `test_diff_without_final_newline_keeps_changes_on_separate_lines`, `test_ui_displays_independent_before_after_evidence` |
+| AC9 | `test_service_reuses_identical_tests_for_both_versions`, `test_unchanged_tests_produce_real_before_after_results`, `test_infinite_loop_is_terminated`, `test_process_output_limit_stops_a_noisy_child`, `test_noisy_tests_cannot_verify_a_fix`, `test_nonfinite_or_nonpositive_execution_timeout_is_rejected` |
 | AC10 | `test_no_collected_tests_does_not_verify_a_fix`, `test_skipped_tests_do_not_verify_a_fix`, `test_passed_original_or_unchanged_code_is_not_a_verified_repair`, `test_timeout_or_error_never_verifies` |
 | AC11 | `test_ollama_failure_preserves_original_test_evidence`, `test_model_timeout_is_reported`, `test_non_object_generation_response_is_a_graceful_failure` |
 | AC12 | `test_real_progress_stages_preserve_identical_test_inputs`, `test_human_readable_time`, `test_request_is_local_structured_and_tracks_only_real_tokens` |
 | AC13 | `test_selecting_demo_automatically_populates_both_inputs`, `test_demo_loader_and_reset_work`, `test_consent_required_even_without_tests` |
 | AC14 | `test_performance_and_presentation_settings_do_not_change_inputs`, `test_ui_displays_independent_before_after_evidence` |
 | AC15 | `test_dataset_has_twelve_complete_unique_cases`, `test_all_dataset_originals_fail_and_references_pass`, `test_evaluation_export_contains_real_baseline_and_no_fabricated_ai` |
-| AC16 | `test_shipped_evidence_matches_original_hashes_and_validates`, `test_human_review_is_separate_hash_bound_and_raw_file_unchanged`, `test_judgements_are_tied_to_exact_saved_response`, `test_evaluation_dashboard_reads_recorded_data_without_an_ai_call` |
+| AC16 | `test_shipped_evidence_matches_original_hashes_and_validates`, `test_human_review_is_separate_hash_bound_and_raw_file_unchanged`, `test_judgements_are_tied_to_exact_saved_response`, `test_evaluation_dashboard_reads_recorded_data_without_an_ai_call`, `test_invalid_saved_evidence_is_a_validation_error`, `test_non_object_review_does_not_hide_a_valid_saved_run`, `test_dashboard_rejects_invalid_csv_boolean_without_crashing` |
 | AC17 | `test_setup_installs_only_in_project_environment`, `test_windows_installer_consent_and_exact_user_scope`, `test_reused_ollama_is_not_recorded_as_owned`, `test_repeated_start_does_not_launch_duplicate`, `test_occupied_port_is_not_taken_over` |
 | AC18 | `test_requirements_map_every_criterion_to_existing_tests`, `test_documented_prompt_matches_runtime`, `test_shipped_evidence_matches_original_hashes_and_validates`; `.github/workflows/ci.yml` |
 

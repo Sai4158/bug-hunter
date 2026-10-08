@@ -137,3 +137,103 @@ planning records, optional Compose, and CI; it did not rebuild the working POC.
 The repository is usable for a rehearsed local POC demo. Independent human review
 is still needed before making accuracy claims; [issue 4](https://github.com/Sai4158/bug-hunter/issues/4)
 tracks that limitation explicitly. Older failures and timings remain intact.
+
+## Additional edge-case review — October 8, 2026
+
+The pre-review suite passed 123 tests. New regression checks reproduced six
+failures in missing-final-newline diffs and malformed saved-evidence/review paths.
+Code inspection also found that subprocess output was truncated only after
+`communicate()` had accumulated it in memory. These confirmed paths were repaired.
+
+- Diffs keep separate added/removed lines and explicit missing-newline markers.
+- Saved JSON structure, recorded booleans, and nested AI evidence are validated;
+  malformed review records are reported without hiding a valid run.
+- Capture buffers are capped at 100,000 bytes per stream while reading. Exceeding
+  the limit stops the owned subprocess tree and returns an error, not a verified
+  fix. Finite positive timeouts are required. Normal Unicode output and invalid
+  byte sequences are handled without crashing.
+- Windows Python 3.12: **143 passed**, full run **51.53 seconds**. Linux Python
+  3.12 in a fresh temporary environment with the project mounted read-only:
+  **141 passed, 2 skipped**, **39.21 seconds**; skips are Windows PowerShell mocks.
+  This adds 20 focused cases without removing or weakening the previous tests.
+- Python compilation, package consistency, project Pylint error checks, whitespace,
+  UI regression checks, and all 21 archived-evidence hashes passed. Platform-only
+  `msvcrt`/`fcntl` imports have narrowly scoped lint annotations; their existing
+  runtime branches were not changed.
+- New real 3B boundary run: original **2 passed / 1 failed**, corrected
+  **3 passed / 0 failed**, Fix Verified **Yes**, service **22.455 seconds**.
+  Raw JSON/CSV remain at `evaluation/results/results-20261008T093751840257Z.*`
+  locally, ignored by Git. Its explanation again incorrectly discussed `is`/`==`;
+  this response remains unchanged and unreviewed, not a new accuracy claim.
+- An actual disconnected endpoint returned AI unavailable while Pylint stayed
+  available and the original tests retained **2 passed / 1 failed**, with no
+  verified-fix claim. Managed startup/check and Streamlit health returned success.
+
+The previous successful four-job CI run is preserved as preceding-revision
+evidence. At this pre-publication checkpoint, the new edits had been checked
+locally on Windows and Linux; macOS and GitHub CI results were pending. No tests can
+establish correctness for every possible Python input, and execution remains a
+trusted-code POC rather than a production sandbox.
+
+### Follow-up 14-item repository artifact audit
+
+All 14 requested artifact categories exist. A new required-file regression check
+protects the setup helpers, configuration, documentation, tests, and saved result
+files against accidental omission. Windows full suite: **144 passed, 0 failed**,
+**33.59 seconds**. Compilation, dependency checks, Pylint error checks, PowerShell
+syntax, Compose configuration, and whitespace checks passed. Streamlit health and
+local Ollama returned success; the saved full run contains 12 completed cases.
+No known credential patterns, tracked runtime/cache artifacts, or nested
+repositories were found. Archived cases/results were not changed.
+
+The GitHub issues, closed readiness milestone, four-item public board, and real
+incremental commit history were verified directly. At that checkpoint, published
+`main` was at `3c6a859`, with successful four-job CI run `37755455184`; it did not
+yet contain the local edge-case fixes. Independent human-review issue 4 remains open.
+
+## Final publication checks — October 8, 2026
+
+The final local pre-push Windows suite passed **144 tests**. The independent
+14-item artifact checklist, numbered requirements/test mapping, original sample
+hashes, compilation, dependency consistency, Pylint error checks, PowerShell
+syntax, Compose configuration, and whitespace checks passed. Known-secret scans
+found no matches; generated environments, results, runtime files, and caches
+remain ignored. This is a scoped scan, not a guarantee that all secrets or possible
+bugs can be detected.
+
+The in-app browser backend was unavailable, so the standalone test browser was
+used for the live UI. Example selection populated both source and tests; consent
+was enforced; a malformed model response remained visible alongside real Pylint
+and original-test evidence. Results-tab navigation, Presentation Mode, and
+Evaluation worked. A narrow-screen check found Streamlit overriding the mobile
+title font; a scoped selector correction restored **32px** at a **392px** CSS
+viewport, with no page-width overflow. The chart library emitted a nonblocking
+scale-binding warning; no browser console errors were observed at that checkpoint.
+
+New genuine 3B results were saved locally at
+`evaluation/results/results-20261008T100720040898Z.json` and its CSV companion
+(ignored, not substituted for shipped samples):
+
+| Case | Original passed / failed | Corrected passed / failed | Fix verified | Service seconds |
+| --- | --- | --- | --- | --- |
+| Average | 0 / 3 | 1 / 2 | No | 27.797 |
+| Boundary comparison | 2 / 1 | 3 / 0 | Yes | 23.084 |
+| Skipped first value | 1 / 2 | 3 / 0 | Yes | 36.961 |
+
+All three returned schema-valid responses. The average proposal did not satisfy
+all supplied tests. The skipped-first-value response also incorrectly claimed
+that the original did not handle empty input. Neither passing tests nor valid
+JSON establish explanation accuracy; judgments remain **Unreviewed**. A separate
+average browser run was rejected for an out-of-range source line, displayed about
+**40s**, and did not verify a fix. No response, test, or reference was altered to
+hide these limitations. All previously shipped raw evidence remains unchanged.
+
+A separate boundary browser run displayed **38s**, original **2 passed / 1 failed**,
+corrected **3 passed / 0 failed**, and **Fix Verified: Yes**. The proposed code,
+unified diff, validation cards, and detailed-output expanders rendered correctly.
+This is a UI observation, not an additional reconstructed raw model export.
+
+Cross-platform results must be read from the actual published revision's
+[GitHub CI run](https://github.com/Sai4158/bug-hunter/actions/workflows/ci.yml),
+not inferred from local Windows checks. The POC remains suitable only for trusted
+inputs and human-reviewed demonstrations, not guaranteed automatic repair.

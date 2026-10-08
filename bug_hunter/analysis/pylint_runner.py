@@ -39,6 +39,8 @@ def run_pylint(code: str, timeout: float = 20) -> PylintResult:
             return PylintResult("error", error=f"Could not start Pylint: {exc}")
         if result.timed_out:
             return PylintResult("timeout", error="Pylint exceeded its execution timeout.")
+        if result.output_limited:
+            return PylintResult("error", error="Pylint output exceeded its per-stream limit.", output=result.stdout)
         parsed = parse_pylint_output(result.stdout)
         if parsed.status != "ok" and result.stderr:
             parsed.error = f"{parsed.error}\n{result.stderr}"
