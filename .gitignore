@@ -12,3 +12,4 @@ evaluation/results/
 evaluation/reviews/
 *.log
 .bug-hunter-runtime/
+test-results/
