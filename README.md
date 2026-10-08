@@ -10,6 +10,28 @@ AI inference runs on your computer through Ollama. No API key or paid AI API is
 used. Streamlit, Pylint, and pytest also run locally. Hardware and electricity
 usage are not free, and model quality and speed depend on your machine.
 
+## Project evidence
+
+| Artifact | Location |
+| --- | --- |
+| Behavioral requirements and numbered acceptance criteria | [Requirements and test mapping](docs/REQUIREMENTS.md) |
+| Architecture and interaction diagrams | [Architecture](docs/ARCHITECTURE.md) |
+| Actual local-model prompt and configuration | [LLM prompt](docs/LLM-PROMPT.md) |
+| Evaluation cases, results, and limitations | `evaluation/cases/`, `evaluation/recorded/`, [validation history](docs/VALIDATION.md) |
+| Automated tests and cross-platform CI | `tests/`, [workflow](.github/workflows/ci.yml), [actual CI runs](https://github.com/Sai4158/bug-hunter/actions/workflows/ci.yml) |
+| Issues, milestone, project board, and honest history | [Project tracking](docs/PROJECT-TRACKING.md) |
+| Sources and acknowledgments | [References](docs/REFERENCES.md) |
+
+The POC runs entirely on the user computer:
+
+```mermaid
+flowchart LR
+    User[User] --> App[Streamlit / Bug Hunter]
+    App <--> Model[Local Ollama]
+    App --> Lint[Pylint]
+    App --> Tests[pytest]
+```
+
 ## Get the project
 
 Clone the standalone repository:
@@ -240,16 +262,34 @@ Cloud, user accounts, or an API key.
 
 ### Optional Docker-based Ollama
 
-Instead of native Ollama:
+Native Ollama remains the simplest option. For an alternative, install Docker
+and use the included [Ollama-only Compose file](compose.ollama.yml):
 
 ```bash
-docker run -d --name bug-hunter-ollama -p 127.0.0.1:11434:11434 -v bug-hunter-ollama-data:/root/.ollama ollama/ollama:latest
-docker exec bug-hunter-ollama ollama pull qwen2.5-coder:3b
+docker compose -f compose.ollama.yml config --quiet
+docker compose -f compose.ollama.yml up -d
+docker compose -f compose.ollama.yml exec ollama ollama pull qwen2.5-coder:3b
+docker compose -f compose.ollama.yml exec ollama ollama list
 ```
 
-For an existing stopped container, use `docker start bug-hunter-ollama`.
-Do not run native Ollama and the container on the same port. The named volume
-preserves model downloads. Python/Streamlit still run through the project helpers.
+It pins the official Ollama image to `0.35.1` by default, binds only loopback,
+checks service health, and retains model downloads in a named volume. Set
+`OLLAMA_IMAGE_TAG` explicitly to change the runtime version. Weights are not
+downloaded by Compose startup; the pull command above is your explicit download.
+Python/Streamlit still run through the project helpers, not inside this container.
+
+Do **not** start another service on an occupied port. Reuse an existing native or
+Docker Ollama instead. For an existing `bug-hunter-ollama` container, use
+`docker start bug-hunter-ollama` and its existing `docker exec` commands; do not
+create a duplicate. Stop only a service you started:
+
+```bash
+docker compose -f compose.ollama.yml stop
+```
+
+The app's Stop helper deliberately leaves pre-existing Docker Ollama running.
+If using another local port, set both `OLLAMA_PORT` for Compose and the matching
+`OLLAMA_BASE_URL` for the app. Never expose the POC publicly.
 
 ## Classroom workflow
 
@@ -327,12 +367,19 @@ evaluation/results/        Your generated runs (ignored)
 evaluation/reviews/        Separate human judgments (ignored)
 tests/                     Project regression tests
 docs/VALIDATION.md         Historical evaluation notes
+docs/REQUIREMENTS.md       Numbered behavioral criteria and test traceability
+docs/ARCHITECTURE.md       Component and interaction diagrams
+docs/LLM-PROMPT.md         Actual runtime prompt, schema, and model settings
+docs/PROJECT-TRACKING.md   GitHub issues, milestone, board, and history
+docs/REFERENCES.md         Primary sources and acknowledgments
 AGENTS.md                  Coding-agent scope, safety, and verification guidance
 setup_env.py, setup.*       Project-local dependency setup
 launch.py, run.*            Portable startup and checks
 control.py, control.ps1     Managed startup, ownership checks, and shutdown
 start.*, stop.*             One-command start / stop helpers
 requirements.txt           Pinned direct Python dependencies
+compose.ollama.yml         Optional local Ollama environment only
+.github/workflows/ci.yml   Windows/macOS/Linux regression verification
 ```
 
 The application remains a single local Python project. It adds no database, cloud
@@ -377,6 +424,18 @@ Windows:
 ```
 
 macOS / Linux: replace the Python path with `.venv/bin/python`.
+
+[GitHub Actions](https://github.com/Sai4158/bug-hunter/actions/workflows/ci.yml)
+runs the full suite on Windows/macOS/Linux with Python 3.12 and additionally
+Linux with Python 3.11. It installs into `.venv`, checks compilation/dependencies
+and helper syntax, and uploads actual pytest reports. AI is mocked; CI neither
+downloads weights nor measures live model quality. Live local checks and human
+review remain separate evidence.
+
+The [requirements matrix](docs/REQUIREMENTS.md#test-plan-and-traceability) maps
+AC1–AC18 to existing tests. Documentation integrity tests check those references,
+the actual system prompt, and local documentation links. New generated test
+reports, runtime state, evaluation runs/reviews, and caches remain ignored.
 
 Tests cover parsing, strict validation, subprocess execution, offline/error
 handling, UI behavior, evaluation integrity, and the setup helpers. These regression

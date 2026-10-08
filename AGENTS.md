@@ -22,6 +22,11 @@ when commands or requirements change. Keep this guide aligned with the actual co
 - `setup_env.py` and `setup.*`: project-local Python dependency installation.
 - `launch.py` and `run.*`: foreground launch/checks; offline Ollama is a warning.
 - `control.py`, `control.ps1`, `start.*`, and `stop.*`: managed service lifecycle.
+- `docs/REQUIREMENTS.md`: AC1–AC18 and test traceability; keep expected behavior explicit.
+- `docs/ARCHITECTURE.md`, `docs/LLM-PROMPT.md`: actual components and runtime prompt/settings.
+- `docs/REFERENCES.md`, `docs/PROJECT-TRACKING.md`: attribution and genuine GitHub planning links.
+- `.github/workflows/ci.yml`: mocked-AI regression CI across Windows/macOS/Linux.
+- `compose.ollama.yml`: optional loopback-only Ollama; the app still uses native Python.
 
 ## Setup and service lifecycle
 
@@ -80,3 +85,7 @@ Report exact test results and which operating systems were actually exercised.
 Keep historical validation counts intact and add dated new results separately.
 Before an authorized commit, inspect staged files and check for secrets/artifacts.
 Push only to the user's intended repository and never force-push without approval.
+Keep docs, acceptance-criterion mappings, runtime prompt, and README commands aligned.
+CI is not a live-model evaluation. Do not backdate planning records or fabricate
+incremental history. Preserve prior counts and all recorded evidence. CI test
+reports belong in ignored `test-results/`, not in commits.
