@@ -445,6 +445,26 @@ tests do not constitute a new model evaluation. See the historical validation
 notes for earlier platform checks; do not assume that every platform has been
 executed on every revision.
 
+### Repository completion checks (October 8, 2026)
+
+- Local Windows suite: **123 passed, 0 failed**. [Actual successful CI](https://github.com/Sai4158/bug-hunter/actions/runs/37754034593):
+  Windows/macOS Python 3.12 each **123 passed**; Linux Python 3.11/3.12 each
+  **121 passed, 2 Windows-only checks skipped**. Compilation, package consistency,
+  helper syntax, and preserved-evidence checks passed.
+- Start/repeated Start, HTTP health, Stop/repeated Stop, and restart passed without
+  stopping shared Ollama. The optional Compose environment was tested in isolation.
+- A fresh local 3B boundary evaluation verified the fix with original **2 passed /
+  1 failed**, corrected **3 passed / 0 failed**, and **62.564 seconds** service time.
+  Its explanation was incorrect and remains unreviewed. A separate browser demo
+  displayed **Fix Verified: Yes** in **46s**; demo loading and Evaluation were checked.
+- Requirements AC1–AC18, diagrams, prompt/settings, references, CI, and real dated
+  issues/milestone/board are present. No historical planning or earlier commits
+  were fabricated; [human-review follow-up](https://github.com/Sai4158/bug-hunter/issues/4)
+  remains open. All 21 shipped raw evidence files stayed unchanged.
+
+See [full verification notes](docs/VALIDATION.md#repository-completion-checks--october-8-2026)
+for the initial CI configuration failure, correction, raw result path, and limitations.
+
 ### Start / Stop helper checks (October 6, 2026)
 
 - Windows Python 3.12: **117 passed, 0 failed**. A fresh Linux Python 3.11

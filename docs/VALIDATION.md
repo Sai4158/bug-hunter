@@ -1,9 +1,9 @@
 # Recorded validation history
 
-This is the original October 5, 2026 engineering evidence, not a claim that these
-model runs were repeated during the standalone-repository migration. The historical
-88-test counts below belong to that earlier revision; see the main README for the
-standalone project's current verification. Recorded runs include unsuccessful results.
+The October 5, 2026 engineering evidence below is preserved, not a claim that
+those model runs were repeated during standalone migration. Historical test
+counts belong to their respective revisions. New October 8 verification appears
+in a separate section at the end. Recorded runs include unsuccessful results.
 
 ## Recorded validation
 
@@ -81,3 +81,59 @@ It is not consistently an instant-response demo on this CPU. Prepare the model i
 close unnecessary applications when memory is tight, and show saved runs explicitly as
 recorded evidence if live inference is too slow. Finish human judgments before claiming
 intended-bug detection or explanation accuracy. No commits or pushes were made during that historical validation pass.
+
+## Repository completion checks — October 8, 2026
+
+The application implementation, evaluation cases, and all 21 shipped raw evidence
+files remain unchanged from the pre-audit revision. This pass added requirements
+traceability, architecture, prompt documentation, references, real dated GitHub
+planning records, optional Compose, and CI; it did not rebuild the working POC.
+
+### Automated checks
+
+- Windows local Python 3.12: **123 passed, 0 failed**, including six new
+  documentation/input-limit cases. Last full local run took **49.04 seconds**.
+- Actual [successful GitHub Actions run](https://github.com/Sai4158/bug-hunter/actions/runs/37754034593),
+  commit `65de6b4`: Windows Python 3.12 **123 passed**; macOS Python 3.12
+  **123 passed**; Linux Python 3.12 **121 passed, 2 skipped**; Linux Python 3.11
+  **121 passed, 2 skipped**. Linux skips are Windows PowerShell installer mocks.
+- CI compilation, package consistency, helper syntax, and recorded-evidence
+  checks passed. These are mocked-AI regression checks, not live model benchmarks.
+  Native Ollama inference/startup on macOS and Linux was not exercised in CI.
+- The [initial CI run](https://github.com/Sai4158/bug-hunter/actions/runs/37753750175)
+  failed in all four jobs on one default-URL assertion: the new workflow had set
+  `OLLAMA_BASE_URL` to an unused port. The conflicting workflow override was
+  removed; the application and test assertion were not changed to hide failure.
+- Local compile, `pip check`, PowerShell syntax, and `git diff --check` passed.
+  The repository scan found no known credential patterns, machine-specific source
+  paths, nested repositories, or tracked caches/runtime/generated results.
+  Pattern scanning is not a guarantee that every possible secret is detectable.
+
+### Real local operation
+
+- Managed Start, repeated Start, HTTP 200 health, Stop, repeated Stop, and restart
+  passed on Windows. The pre-existing Docker Ollama was left running. No real
+  WinGet installation or fresh model-weight download was needed on this machine.
+- An isolated optional Compose service using official Ollama **0.34.0** became
+  healthy on loopback port **11436**, returned `/api/version`, and listed an empty
+  model store. The temporary container/network/empty volume were removed afterward;
+  no shared service or model volume was removed. Compose does not download weights.
+- Real 3B evaluation of `02-comparison`: original **2 passed / 1 failed**;
+  AI-corrected **3 passed / 0 failed**; **Fix Verified: Yes**. Service time was
+  **62.564 seconds**, or **63.184 seconds** including the evaluation control.
+  Raw evidence is retained locally in
+  `evaluation/results/results-20261008T090106160513Z.json` and its CSV companion
+  (ignored, not a replacement for shipped evidence).
+- Its explanation incorrectly claimed the original used `is` instead of `==`;
+  the actual source was `age > 18`, and the generated fix used `age >= 18`.
+  The response is preserved unchanged. Detection/explanation judgments remain
+  **Unreviewed**, not automatically marked correct because the fix passed tests.
+- A separate real browser run of the boundary example displayed one AI finding,
+  two Pylint messages, **Fix Verified: Yes**, and **46s**. Example population,
+  execution consent, progress, and the Evaluation dashboard were exercised.
+  The built-in in-app browser was unavailable; these checks used the standalone
+  test browser. This browser observation is not a fabricated raw API export.
+
+The repository is usable for a rehearsed local POC demo. Independent human review
+is still needed before making accuracy claims; [issue 4](https://github.com/Sai4158/bug-hunter/issues/4)
+tracks that limitation explicitly. Older failures and timings remain intact.
